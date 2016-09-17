@@ -13,7 +13,7 @@ var docMode = false;
 var finalDocImageBase64;
 var cryptKey;
 var unique_identifier;
-var signatureUrl = 'http://dev-api.acrossopeneyes.com/signatures';
+//var signatureUrl = 'http://dev-api.acrossopeneyes.com/signatures';
 //var signatureUrl = 'http://127.0.0.1/qr_signature_heroku/peaceful-lowlands-44823/web/ajax.php';
 function sendDocSignature() {
 	//Encrypt
@@ -64,6 +64,12 @@ function qrSignature(){
 	var docQrReaded = false;
 
 	var photoTaked = false;
+	/*Browser detection*/
+	function isMobileBrowser() {
+		var check = false;
+		(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+		return check;
+	}
 	/*Correct width and height*/
 	if(window.innerWidth > window.innerHeight) {
 		strait = window.innerHeight;
@@ -73,10 +79,13 @@ function qrSignature(){
 		longer = window.innerHeight;
 	}
 	if(Math.abs(window.orientation) !== 90){
-		document.getElementById('turn_phone').style.display = 'block';
-		document.getElementById('turn_phone').style.marginTop = '100px';
-		document.getElementById('turn_image').width = strait-50;
-		document.getElementById('turn_image').height = (strait-50)*0.79;
+		if(isMobileBrowser()) {
+			//document.getElementById('turn_phone').style.display = 'block';
+			document.getElementById('take_pic_of_qr').style.display = 'block';
+			//document.getElementById('turn_phone').style.marginTop = '100px';
+			/*document.getElementById('turn_image').width = strait-50;
+			document.getElementById('turn_image').height = (strait-50)*0.79;*/
+		}
 		//document.getElementById('turn_image').removeAttribute('height');
 		//alert(document.getElementById('turn_image').height);
 
@@ -90,12 +99,12 @@ function qrSignature(){
 		input_btn.style.backgroundSize = "\""+(longer/8)+"px\"";
 		
 		btn_container = document.getElementById("file_button");
-		btn_container.style.display = "block";
+		/*btn_container.style.display = "block";
 		btn_container.style.top = ((strait)/2-(longer/8/2))+"px";
 		btn_container.style.right = "10px";
 		btn_container.style.backgroundSize = (longer/8)+"px";
 		btn_container.style.width = longer/8+"px";
-		btn_container.style.height = longer/8+"px";
+		btn_container.style.height = longer/8+"px";*/
 		takePicContainer = document.getElementById('take_picture_container');
 		takePicContainer.style.width = strait+'px';
 
@@ -125,15 +134,16 @@ function qrSignature(){
 		if(Math.abs(window.orientation) !== 90){
 			//document.getElementById('take_doc_picture').height = (window.innerHeight-50)+"px";
 			if(!photoTaked) {
-				document.getElementById('turn_phone').style.display = 'block';
-				document.getElementById('turn_phone').style.marginTop = '100px';
-				document.getElementById('turn_image').height = strait-50;
-				document.getElementById('turn_image').width = (strait-50)*1.261;
+				//document.getElementById('turn_phone').style.display = 'block';
+				//document.getElementById('turn_phone').style.marginTop = '100px';
+				/*document.getElementById('turn_image').height = strait-50;
+				document.getElementById('turn_image').width = (strait-50)*1.261;*/
 				//document.getElementById('turn_image').removeAttribute('width');
 				//alert(document.getElementById('turn_image').width);
 				document.getElementById('take_picture_container').style.display = 'none';
-				document.getElementById("file_button").style.display = 'none';
+				//document.getElementById("file_button").style.display = 'none';
 			} else {
+				document.getElementById('turn_phone').style.display = 'block';
 				//loaderContainer = document.getElementById("sk-folding-cube-container");
 				/*loaderContainer.style.width = (window.innerHeight-window.innerHeight/2)+"px";
 				loaderContainer.style.height = (window.innerHeight-window.innerHeight/2)+"px";
@@ -143,6 +153,7 @@ function qrSignature(){
 		} else {
 			//document.getElementById('take_doc_picture').height = (window.innerWidth-50)+"px";
 			if(!photoTaked) {
+				return false;
 				document.getElementById('take_picture_container').style.display = 'block';
 				document.getElementById('turn_phone').style.display = 'none';
 				
@@ -153,11 +164,11 @@ function qrSignature(){
 				
 				btn_container = document.getElementById("file_button");
 				btn_container.style.display = "block";
-				btn_container.style.top = (100)+"px";
+				/*btn_container.style.top = (100)+"px";
 				btn_container.style.right = "10px";
 				btn_container.style.backgroundSize = (strait/8)+"px";
 				btn_container.style.width = strait/8+"px";
-				btn_container.style.height = strait/8+"px";
+				btn_container.style.height = strait/8+"px";*/
 				takePicContainer = document.getElementById('take_picture_container');
 				takePicContainer.style.width = longer+'px';
 
@@ -166,6 +177,7 @@ function qrSignature(){
 				document.getElementById('take_picture_container').style.display = 'block';
 				
 			} else {
+				takeDocSignPicture();
 				/*loaderContainer = document.getElementById("sk-folding-cube-container");
 				loaderContainer.style.width = (window.innerHeight-window.innerHeight/2)+"px";
 				loaderContainer.style.height = (window.innerWidth-window.innerWidth/2)+"px";
@@ -385,7 +397,7 @@ function qrSignature(){
 		var maxX = 0;
 		var maxY = 0;
 		for (var i = 0; i<pix.length; i+=4) {
-			if(pix[i] < 20){
+			if(pix[i] < 10){
 				pointX = (i / 4)%canvWidth;
 				pointY = Math.floor((i / 4)/canvWidth);
 				if(pointX<minX) {
@@ -523,8 +535,9 @@ function qrSignature(){
 		var start = new Date().getTime();
 
 		returnObj = {};
-		returnObj.x = leftX-(QRRatio*4.813);
+		returnObj.x = leftX-(QRRatio*4.7);
 		returnObj.y = leftY;
+		
 		return returnObj;
 		pixColor = operationContext.getImageData(leftX, leftY, 1, 1).data[0];
 		newColor = pixColor;
@@ -602,10 +615,11 @@ function qrSignature(){
 				}
 			}
 		}
+		operationContext.fillStyle = 'yellow';
 		operationContext.fillRect(leftTopX,leftTopY,10,10);
 		returnObj = {}
 		returnObj.x = leftTopX;
-		returnObj.y = leftTopY;
+		returnObj.y = leftTopY+10;
 		returnObj.newColor = newColor;
 		var end = new Date().getTime();
 		var time = end - start;
@@ -633,6 +647,7 @@ function qrSignature(){
 		returnObj.x = leftTopX;
 		returnObj.y = leftTopY;
 		returnObj.newColor = newColor;
+
 		var end = new Date().getTime();
 		var time = end - start;
 		console.log('Right time: '+time);
@@ -665,7 +680,7 @@ function qrSignature(){
 		leftDownY -= 2;
 		returnObj.x = leftSideX;
 		returnObj.y = leftDownY;
-		alert(leftDownY);
+		operationContext.fillRect(returnObj.x,returnObj.y,10,10);
 		return returnObj;
 	}
 	function sendSignature(imgData) {
@@ -715,9 +730,10 @@ function qrSignature(){
 		//bottomPos = getTheBottomBorder(leftSide.x,leftSide.y,leftSide.newColor);
 		//Test the new method
 		bottomPos = {};
-		bottomPos.y = QRRatio*3.306;
+		bottomPos.y = leftSide.y+QRRatio*3.306;
 		//bottomPos.y = leftSide.y+((rightBorder.x-leftSide.x)/4);
 		bottomPos.x = leftSide.x;
+		operationContext.fillRect(bottomPos.x,bottomPos.y,10,10);
 		//return false;
 		leftX = bottomPos.x;
 		leftDownY = bottomPos.y;
@@ -807,7 +823,7 @@ function qrSignature(){
 		//operationContext.drawImage(canvas,0,0,-canvas.width/5,-canvas.height/5,0,0,-canvas.width/5,-canvas.height/5); //itt kell kicsinyíteni - próba
 		//operationContext.drawImage(canvas,-canvas.width/2,-canvas.height/2); //itt kell kicsinyíteni - próba
 		operationContext.drawImage(originalCanvas, 0, 0,canvas.width/canvasRatio,canvas.height/canvasRatio);
-		operationContext.restore();
+		//operationContext.restore();
 		
 		/*creating the "blue"*/
 		
@@ -863,6 +879,7 @@ function qrSignature(){
 				if(!docSign) {
 					document.getElementById('status').style.color = '#5cb85c';
 					document.getElementById('status').innerHTML = 'Signature has been sent!';
+					document.getElementById("rectangle").style.display = 'none';
 					imageColorCorrection(context); //Test
 					rotateToHorizontal();
 				} else {
@@ -879,7 +896,7 @@ function qrSignature(){
 			}			
 		}
 		try{
-			//imageColorCorrection(context);
+			imageColorCorrection(context);
 			contrastImage(context,100);
 			var start = new Date().getTime();
 			qrcode.decode();
@@ -887,13 +904,23 @@ function qrSignature(){
 			var time = end - start;
 			console.log('QR read time: '+time);
 		} catch(e){
-			document.getElementById('status').style.color = 'red';
-			document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
-			photoTaked = false;
-			document.getElementById("file_button").style.display = 'block';
-			document.getElementById("input").style.display = 'block';
-			document.getElementById("take_picture_container").style.display = 'block';
-			document.getElementById("sk-folding-cube-container").style.display = 'none';
+			if(isMobileBrowser()) {
+				document.getElementById('status').style.color = 'red';
+				document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
+				photoTaked = false;
+				document.getElementById("file_button").style.display = 'block';
+				document.getElementById("input").style.display = 'block';
+				document.getElementById("take_picture_container").style.display = 'block';
+				document.getElementById("sk-folding-cube-container").style.display = 'none';
+				document.getElementById("browser_mode").style.display = 'none';
+			} else {
+				//Browser mode
+				document.getElementById('status').style.color = 'red';
+				document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
+				photoTaked = false;
+				document.getElementById("sk-folding-cube-container").style.display = 'none';
+				document.getElementById("browser_mode").style.display = 'block';
+			}
 		}
 	}
 	function drawVideo(){
@@ -908,13 +935,19 @@ function qrSignature(){
 		}
 	}
 	function checkUserMedia() {
-		noUserMedia();
-		return false;
+		document.getElementById('take_picture_container').style.display = 'none';
+		document.getElementById('turn_phone').style.display = 'none';
+		//Browser detection
+		//if(isMobileBrowser()) {
+			noUserMedia();
+			return false;
+		//}
+		cameraMode = true;
 		navigator.getUserMedia = (navigator.getUserMedia || 
 								 navigator.webkitGetUserMedia || 
 								 navigator.mozGetUserMedia || 
 								 navigator.msGetUserMedia);
-		navigator.getUserMedia = false;
+		//navigator.getUserMedia = false;
 		if (navigator.getUserMedia) {
 			//Request access to video only
 			navigator.getUserMedia(
@@ -930,6 +963,7 @@ function qrSignature(){
 					document.getElementById('qr-canvas').style.display = 'block';
 				},
 				function(error) {
+					console.log(error);
 					alert('Something went wrong. (error code ' + error.code + ')');
 				}
 			);
@@ -938,7 +972,6 @@ function qrSignature(){
 			noUserMedia();
 		}
 		video.addEventListener('playing', function() {
-				alert(video.videoWidth);
 				canvWidth = video.videoWidth;
 				canvHeight = video.videoHeight;
 				canvas.width = video.videoWidth;
@@ -960,9 +993,9 @@ function qrSignature(){
 			$this = this;
 			$("#rectangle").css({
 				'width':(video.videoWidth-50)+"px",
-				'height':(video.videoWidth-50)/4.04+"px",
+				'height':(video.videoWidth-50)/1.7+"px",
 				'margin-left':'25px',
-				'margin-top':(video.videoHeight-(video.videoWidth-50)/4.04)/2+'px',
+				'margin-top':(video.videoHeight-(video.videoWidth-50)/1.7)/2+'px',
 				'display':'block'
 			});
 			$("#find_qr_btn").css({
@@ -1015,27 +1048,21 @@ function qrSignature(){
     //resizeCanvas();
 	//checkUserMedia();
 	function noUserMedia(){
-		input = document.getElementById("input");
-		input.addEventListener("change", handleFile);
-		/*input_btn = document.getElementById("input");
-		input_btn.style.height = window.innerHeight-window.innerHeight/2+"px";
-		input_btn.style.width = window.innerHeight-window.innerHeight/2+"px";
-		input_btn.style.backgroundSize = "\""+(window.innerHeight-window.innerHeight/2)+"px\"";
-		btn_container = document.getElementById("file_button");
-		btn_container.style.display = "block";
-		btn_container.style.top = (window.innerHeight-(window.innerHeight-window.innerHeight/2))/2+"px";
-		btn_container.style.left = (window.innerWidth-(window.innerHeight-window.innerHeight/2))/2+"px";
-		btn_container.style.backgroundSize = (window.innerHeight-window.innerHeight/2)+"px";*/
-		document.getElementById("input").style.display = "block";
-		loaderContainer = document.getElementById("sk-folding-cube-container");
-		/*loaderContainer.style.width = (window.innerHeight-window.innerHeight/2)+"px";
-		loaderContainer.style.height = (window.innerHeight-window.innerHeight/2)+"px";
-		loaderContainer.style.top = (window.innerHeight-(window.innerHeight-window.innerHeight/2))/2+"px";
-		loaderContainer.style.left = (window.innerWidth-(window.innerHeight-window.innerHeight/2))/2+"px";*/
+		if(isMobileBrowser()) {
+			input = document.getElementById("input");
+			input.addEventListener("change", handleFile);
+			input.style.display = "block";
+		} else {
+			document.getElementById("browser_mode").style.display = "block";
+			input = document.getElementById("input_browser");
+			input.addEventListener("change", handleFile);
+			input.style.display = "block";
+		}
 	}
 	function handleFile(e) {
 		photoTaked = true;
 		document.getElementById("file_button").style.display = 'none';
+		document.getElementById("browser_mode").style.display = "none";
 		document.getElementById("sk-folding-cube-container").style.display = 'block';
 		
 		setTimeout(function(){loadFile(e); }, 500);
