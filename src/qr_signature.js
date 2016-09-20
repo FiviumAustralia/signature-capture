@@ -31,7 +31,7 @@ function sendDocSignature() {
 	*/
 	md5OfBase64 =  CryptoJS.MD5(str);
 	appendMd5ToBase64 = str+md5OfBase64;
-	encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64);
+	encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
 	enc_str = btoa(encryptAppendedMd5ToBase64);
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
