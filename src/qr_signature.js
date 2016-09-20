@@ -21,6 +21,18 @@ function sendDocSignature() {
 	var str = unescape(encodeURIComponent(finalDocImageBase64));
 	var enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
 	enc_str = btoa(enc_str);
+	//Encrypt - new
+	/*
+	1. generate the base 64 of the original image
+	2. generate md5 of base 64
+	3. append  md5 to the base64
+	4. encrypt
+	5. base64 of encrypted data
+	*/
+	md5OfBase64 =  CryptoJS.MD5(str);
+	appendMd5ToBase64 = str+md5OfBase64;
+	encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64);
+	enc_str = btoa(encryptAppendedMd5ToBase64);
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
@@ -327,6 +339,18 @@ function qrSignature(){
 		str = unescape(encodeURIComponent(imgData));
 		enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
 		enc_str = btoa(enc_str);
+		//Encrypt - new
+		/*
+		1. generate the base 64 of the original image
+		2. generate md5 of base 64
+		3. append  md5 to the base64
+		4. encrypt
+		5. base64 of encrypted data
+		*/
+		md5OfBase64 =  CryptoJS.MD5(str);
+		appendMd5ToBase64 = str+md5OfBase64;
+		encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
+		enc_str = btoa(encryptAppendedMd5ToBase64);
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
@@ -689,6 +713,18 @@ function qrSignature(){
 		str = unescape(encodeURIComponent(imgData));
 		enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
 		enc_str = btoa(enc_str);
+		//Encrypt - new
+		/*
+		1. generate the base 64 of the original image
+		2. generate md5 of base 64
+		3. append  md5 to the base64
+		4. encrypt
+		5. base64 of encrypted data
+		*/
+		md5OfBase64 =  CryptoJS.MD5(str);
+		appendMd5ToBase64 = str+md5OfBase64;
+		encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
+		enc_str = btoa(encryptAppendedMd5ToBase64);
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', signatureUrl, true);
 		xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
