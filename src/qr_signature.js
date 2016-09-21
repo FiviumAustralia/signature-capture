@@ -19,8 +19,8 @@ function sendDocSignature() {
 	//Encrypt
 	finalDocImageBase64 = finalDocImageBase64.replace('data:image/png;base64,','');
 	var str = unescape(encodeURIComponent(finalDocImageBase64));
-	var enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
-	enc_str = btoa(enc_str);
+	/*var enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
+	enc_str = btoa(enc_str);*/
 	//Encrypt - new
 	/*
 	1. generate the base 64 of the original image
@@ -331,41 +331,6 @@ function qrSignature(){
 			}
 			return false;
 		}
-	}
-	/*Doctor Signature*/
-	function sendDocSignature(imgData) {
-		//Encrypt
-		imgData = imgData.replace('data:image/png;base64,','');
-		str = unescape(encodeURIComponent(imgData));
-		enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
-		enc_str = btoa(enc_str);
-		//Encrypt - new
-		/*
-		1. generate the base 64 of the original image
-		2. generate md5 of base 64
-		3. append  md5 to the base64
-		4. encrypt
-		5. base64 of encrypted data
-		*/
-		md5OfBase64 =  CryptoJS.MD5(str);
-		appendMd5ToBase64 = str+md5OfBase64;
-		encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
-		enc_str = btoa(encryptAppendedMd5ToBase64);
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				document.getElementById('status').style.color = '#5cb85c';
-				document.getElementById('status').innerHTML = 'Signature sended.';
-			} else {
-				document.getElementById('status').style.color = 'red';
-				document.getElementById('status').innerHTML = 'An error occurred while sending the signature.';
-			}
-		};
-		xhr.open('POST', signatureUrl, true);
-		xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
-		var sendObj = JSON.stringify({"unique_identifier":unique_identifier,"image":enc_str});
-		xhr.send(sendObj);
-		document.getElementById('pin_container').style.display = 'none';
 	}
 	function createDocFinalImage(minX,minY,maxX,maxY){
 		/*var sourceX = leftSide.x*5;
@@ -711,8 +676,8 @@ function qrSignature(){
 		//Encrypt
 		imgData = imgData.replace('data:image/png;base64,','');
 		str = unescape(encodeURIComponent(imgData));
-		enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
-		enc_str = btoa(enc_str);
+		/*enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
+		enc_str = btoa(enc_str);*/
 		//Encrypt - new
 		/*
 		1. generate the base 64 of the original image
