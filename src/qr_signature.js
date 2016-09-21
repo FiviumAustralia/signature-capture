@@ -19,8 +19,8 @@ function sendDocSignature() {
 	//Encrypt
 	finalDocImageBase64 = finalDocImageBase64.replace('data:image/png;base64,','');
 	var str = unescape(encodeURIComponent(finalDocImageBase64));
-	/*var enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
-	enc_str = btoa(enc_str);*/
+	var enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier+document.getElementById('pin').value).toString(), 'rijndael-256', 'ecb');
+	enc_str = btoa(enc_str);
 	//Encrypt - new
 	/*
 	1. generate the base 64 of the original image
@@ -111,12 +111,12 @@ function qrSignature(){
 		input_btn.style.backgroundSize = "\""+(longer/8)+"px\"";
 		
 		btn_container = document.getElementById("file_button");
-		/*btn_container.style.display = "block";
+		btn_container.style.display = "block";
 		btn_container.style.top = ((strait)/2-(longer/8/2))+"px";
 		btn_container.style.right = "10px";
 		btn_container.style.backgroundSize = (longer/8)+"px";
 		btn_container.style.width = longer/8+"px";
-		btn_container.style.height = longer/8+"px";*/
+		btn_container.style.height = longer/8+"px";
 		takePicContainer = document.getElementById('take_picture_container');
 		takePicContainer.style.width = strait+'px';
 
@@ -153,9 +153,11 @@ function qrSignature(){
 				//document.getElementById('turn_image').removeAttribute('width');
 				//alert(document.getElementById('turn_image').width);
 				document.getElementById('take_picture_container').style.display = 'none';
+				document.getElementById('turn_image_doc').style.display = 'block';
 				//document.getElementById("file_button").style.display = 'none';
 			} else {
-				document.getElementById('turn_phone').style.display = 'block';
+				//document.getElementById('turn_phone').style.display = 'block';
+				document.getElementById('take_picture_container').style.display = 'none';
 				//loaderContainer = document.getElementById("sk-folding-cube-container");
 				/*loaderContainer.style.width = (window.innerHeight-window.innerHeight/2)+"px";
 				loaderContainer.style.height = (window.innerHeight-window.innerHeight/2)+"px";
@@ -165,6 +167,7 @@ function qrSignature(){
 		} else {
 			//document.getElementById('take_doc_picture').height = (window.innerWidth-50)+"px";
 			if(!photoTaked) {
+				document.getElementById('turn_image_doc').style.display = 'none';
 				return false;
 				document.getElementById('take_picture_container').style.display = 'block';
 				document.getElementById('turn_phone').style.display = 'none';
@@ -176,11 +179,11 @@ function qrSignature(){
 				
 				btn_container = document.getElementById("file_button");
 				btn_container.style.display = "block";
-				/*btn_container.style.top = (100)+"px";
+				btn_container.style.top = (100)+"px";
 				btn_container.style.right = "10px";
 				btn_container.style.backgroundSize = (strait/8)+"px";
 				btn_container.style.width = strait/8+"px";
-				btn_container.style.height = strait/8+"px";*/
+				btn_container.style.height = strait/8+"px";
 				takePicContainer = document.getElementById('take_picture_container');
 				takePicContainer.style.width = longer+'px';
 
@@ -189,6 +192,7 @@ function qrSignature(){
 				document.getElementById('take_picture_container').style.display = 'block';
 				
 			} else {
+				document.getElementById('turn_image_doc').style.display = 'none';
 				takeDocSignPicture();
 				/*loaderContainer = document.getElementById("sk-folding-cube-container");
 				loaderContainer.style.width = (window.innerHeight-window.innerHeight/2)+"px";
@@ -413,14 +417,14 @@ function qrSignature(){
 		document.getElementById('pin').style.width=(window.innerWidth-50)+'px';
 		//document.getElementById('pin').style.height=(200)+'px';
 		//document.getElementById('pin').style.fontSize = (100)+'px';
-		document.getElementById('enter_your_pin').style.fontSize = (window.innerWidth-300)+'px';
-		document.getElementById('send_pin_btn').style.fontSize = (window.innerWidth-300)+'px';
+		//document.getElementById('enter_your_pin').style.fontSize = (window.innerWidth-300)+'px';
+		//document.getElementById('send_pin_btn').style.fontSize = (window.innerWidth-300)+'px';
 		} else {
 			document.getElementById('pin').style.width=(window.innerHeight-50)+'px';
 			//document.getElementById('pin').style.width=(200)+'px';
 			//document.getElementById('pin').style.fontSize = (100)+'px';
-			document.getElementById('enter_your_pin').style.fontSize = (window.innerHeight-300)+'px';
-			document.getElementById('send_pin_btn').style.fontSize = (window.innerHeight-300)+'px';
+			//document.getElementById('enter_your_pin').style.fontSize = (window.innerHeight-300)+'px';
+			//document.getElementById('send_pin_btn').style.fontSize = (window.innerHeight-300)+'px';
 		}
 		originalContext.strokeStyle = 'red';
 		originalContext.beginPath();
@@ -676,8 +680,8 @@ function qrSignature(){
 		//Encrypt
 		imgData = imgData.replace('data:image/png;base64,','');
 		str = unescape(encodeURIComponent(imgData));
-		/*enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
-		enc_str = btoa(enc_str);*/
+		enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
+		enc_str = btoa(enc_str);
 		//Encrypt - new
 		/*
 		1. generate the base 64 of the original image
@@ -690,6 +694,7 @@ function qrSignature(){
 		appendMd5ToBase64 = str+md5OfBase64;
 		encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
 		enc_str = btoa(encryptAppendedMd5ToBase64);
+		console.log(enc_str);
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', signatureUrl, true);
 		xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
@@ -1053,6 +1058,10 @@ function qrSignature(){
 			input = document.getElementById("input");
 			input.addEventListener("change", handleFile);
 			input.style.display = "block";
+			
+			input_doc_sign = document.getElementById("input_doc_sign");
+			input_doc_sign.addEventListener("change", handleFile);
+			//input_doc_sign.style.display = "block";
 		} else {
 			document.getElementById("browser_mode").style.display = "block";
 			input = document.getElementById("input_browser");
@@ -1107,6 +1116,7 @@ function qrSignature(){
 		var canvas = document.getElementById('qr-canvas');
 		var context = canvas.getContext("2d");
 		var reader = new FileReader;
+		document.getElementById('take_pic_of_qr').style.display = 'none';
 		document.getElementById("file_button").style.display = 'none';
 		document.getElementById('doc_take_picture_container').style.display = 'none';
 		document.getElementById("sk-folding-cube-container").style.display = 'block';

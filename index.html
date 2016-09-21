@@ -47,12 +47,15 @@
 	<div id='rectangle'></div>
 	<canvas id='operation-canvas' style="display:none;"></canvas>
 	<div id='pin_container' style="display:none;">
-		<span id='enter_your_pin'>Please enter your pin</span><br />
+		<p class="text-center" style="font-size:3em;color:#5c87b8;">Please enter your pin</p>
 		<input type="password" maxlength="4" id="pin" onkeyup="checkPinPass();" /><br />
 		<button id="send_pin_btn" onclick="sendDocSignature()" disabled="true">SEND</button>
 	</div>
 	<div id="doc_take_picture_container" style="height:100%;position:fixed;top:0;left:0;display:none;">
 		<img id="take_doc_picture" src="images/doc_take_picture.png" class="img-responsive center-block">
+		<div id="file_button_doc_sign" class="file_button_container center-block" style="text-align:center;">
+				<input type="file" id="input_doc_sign" name="input_doc_sign" accept="image/*" capture="camera"></input>
+		</div>
 	</div>
 	<div id="take_picture_container" style="height:100%;position:fixed;top:0;left:0;display:none;">
 		<img id="take_picture" src="images/take_picture.png" class="img-responsive center-block">
@@ -67,12 +70,10 @@
 	</div>
 	<div id="take_pic_of_qr" style="position:fixed;top:0px;left:1px;display:none;background-color:#FFF;text-align:center;width:100%;margin-top:30px;">
 		<p class="text-center" style="font-size:3em;color:#5c87b8;">Please take a picture of your personal QR code.</p>
-		<img id="turn_image" src="images/doc_take_signature_picture_wo_text.png" class="img-responsive center-block" />
 		<img id="turn_image_doc" src="images/doc_take_signature_picture_wo_text.png" class="img-responsive center-block" />
-			<div id="file_button" class="file_button_container center-block" style="text-align:center;">
-				<input type="file" id="input" name="input" accept="image/*" capture="camera"></input>
-			</div>
-		
+		<div id="file_button" class="file_button_container center-block" style="text-align:center;">
+			<input type="file" id="input" name="input" accept="image/*" capture="camera"></input>
+		</div>
 	</div>
 	<div id="turn_phone" style="position:fixed;top:0px;left:1px;display:none;background-color:#FFF;text-align:center;width:100%;margin-top:30px;">
 		<p class="text-center" style="font-size:3em;color:#5cb85c;">Please rotate your phone horizontally.</p>
