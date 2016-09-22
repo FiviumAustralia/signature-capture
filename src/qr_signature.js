@@ -360,13 +360,15 @@ function qrSignature(){
         finalCanvas.id = "final-canvas";
         finalCanvas.width = sourceWidth*finalRatio;
         finalCanvas.height = sourceHeight*finalRatio;
-        finalCanvas.style.position = "absolute";
+		finalCanvas.setAttribute("class","center-block");
+        /*finalCanvas.style.position = "absolute";*/
         finalCanvas.style.border = "4px solid #5c87b8";
         finalContext = finalCanvas.getContext('2d');
         var body = document.getElementsByTagName("body")[0];
         body.appendChild(finalCanvas);
 		//alert(finalCanvas.width+', '+finalCanvas.height);
         finalContext.drawImage(originalCanvas, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, sourceWidth*finalRatio, sourceHeight*finalRatio);
+
        // contrastImage(finalContext,20);
 		//imageColorCorrection(finalContext);
 		finalDocImageBase64 = finalCanvas.toDataURL("image/png");
@@ -380,6 +382,7 @@ function qrSignature(){
 		document.getElementById("original-canvas").style.display = 'none';
 	}
 	function readDocSignature(){
+		
 		document.getElementById("sk-folding-cube-container").style.display = 'none';
 		imageColorCorrection(originalContext);
 		contrastImage(originalContext,100);
@@ -390,7 +393,7 @@ function qrSignature(){
 		var maxX = 0;
 		var maxY = 0;
 		for (var i = 0; i<pix.length; i+=4) {
-			if(pix[i] < 10){
+			if(pix[i] < 5){
 				pointX = (i / 4)%canvWidth;
 				pointY = Math.floor((i / 4)/canvWidth);
 				if(pointX<minX) {
@@ -412,6 +415,7 @@ function qrSignature(){
 		maxX = maxX+5;
 		maxY = maxY+5;
 		createDocFinalImage(minX,minY,maxX,maxY);
+
 		document.getElementById('pin_container').style.display = 'block';
 		if(window.innerWidth < window.innerHeight) {
 		document.getElementById('pin').style.width=(window.innerWidth-50)+'px';
@@ -862,7 +866,7 @@ function qrSignature(){
 			newY = canvHeight/2 + Math.round(Math.sin(rotationDegree*Math.PI/180)) * sideC;
 		}
 		/*Get the new position of the "blue"*/
-		canvasData = context.getImageData(0, 0, canvWidth, canvHeight),
+		canvasData = context.getImageData(0, 0, canvWidth, canvHeight);
         pix = canvasData.data;
 		for (var i = 0, n = pix.length; i <n; i += 4) {
 			if(pix[i] < 20 && pix[i+1] < 20 && pix[i+2] > 150){
@@ -914,9 +918,9 @@ function qrSignature(){
 				document.getElementById('status').style.color = 'red';
 				document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
 				photoTaked = false;
-				document.getElementById("file_button").style.display = 'block';
-				document.getElementById("input").style.display = 'block';
-				document.getElementById("take_picture_container").style.display = 'block';
+				/*document.getElementById("file_button").style.display = 'block';
+				document.getElementById("input").style.display = 'block';*/
+				document.getElementById("take_pic_of_qr").style.display = 'block';
 				document.getElementById("sk-folding-cube-container").style.display = 'none';
 				document.getElementById("browser_mode").style.display = 'none';
 			} else {
@@ -1127,8 +1131,7 @@ function qrSignature(){
 			img.src = reader.result;
 			img.onload = function () {
 				/*When the image is rotated*/
-				drawImageToFile(img);
-				/*if(img.width < img.height) {
+				if(img.width < img.height && docQrReaded) {
 					var rotateCanvas = document.createElement('canvas');
 					rotateCanvas.id = "rotateCanvas";
 					rotateCanvas.width = img.height;
@@ -1154,7 +1157,7 @@ function qrSignature(){
 					}
 				} else {
 					drawImageToFile(img);
-				}*/
+				}
 			}
 		}
 		reader.readAsDataURL(e.target.files[0]);}, 500);
