@@ -17,7 +17,7 @@ var unique_identifier;
 function debugMessage(message) {
 	if (debug !== undefined && debug === true) {
 		document.getElementById('debug').style.display = 'block';
-		document.getElementById('debug').innerHTML .= message;
+		document.getElementById('debug').innerHTML += message + '<br /><hr /><br />';
 	}
 }
 
