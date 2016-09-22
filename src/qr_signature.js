@@ -13,6 +13,14 @@ var docMode = false;
 var finalDocImageBase64;
 var cryptKey;
 var unique_identifier;
+
+function debugMessage(message) {
+	if (debug !== undefined && debug === true) {
+		document.getElementById('debug').style.display = 'block';
+		document.getElementById('debug').innerHTML .= message;
+	}
+}
+
 //var signatureUrl = 'http://dev-api.acrossopeneyes.com/signatures';
 //var signatureUrl = 'http://127.0.0.1/qr_signature_heroku/peaceful-lowlands-44823/web/ajax.php';
 function sendDocSignature() {
@@ -41,6 +49,8 @@ function sendDocSignature() {
 		} else {
 			document.getElementById('status').style.color = 'red';
 			document.getElementById('status').innerHTML = 'An error occurred while sending the signature.';
+			debug(xhr.status);
+			debug(xhr.responseText);
 		}
 	};
 	xhr.open('POST', signatureUrl, true);

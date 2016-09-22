@@ -162,6 +162,12 @@ canvas {
 	color:#5cb85c;
 	padding-left:8px;
 }
+
+#debug {
+	color: #900;
+	background: rgb(255,255,255,0.3);
+}
+
 #final-canvas {
 	border:4px solid #5cb85c;
 }
