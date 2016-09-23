@@ -571,6 +571,10 @@ function qrSignature(){
 	}
 	function getTheTopBorder(leftTopX,leftTopY,maxDifference){
 		//alert('top');
+		returnObj = {};
+		returnObj.x = leftTopX;
+		returnObj.y = leftTopY-(QRRatio*0.1);
+		return returnObj;
 		var start = new Date().getTime();
 		for(var k=0;k<4;k++){
 			pixColor = operationContext.getImageData(leftTopX, leftTopY, 1, 1).data[0];
@@ -612,7 +616,7 @@ function qrSignature(){
 				}
 			}
 		}
-		operationContext.fillStyle = 'yellow';
+		operationContext.fillStyle = 'red';
 		operationContext.fillRect(leftTopX,leftTopY,10,10);
 		returnObj = {}
 		returnObj.x = leftTopX;
