@@ -50,7 +50,6 @@ function sendDocSignature() {
 	document.getElementById('pin_container').style.display = 'none';
 }
 function qrSignature(){
-	checkUserMedia();
 	/*Global variables*/
 	var canvas = document.getElementById('qr-canvas');
 	/*var canvWidth = width;
@@ -464,6 +463,7 @@ function qrSignature(){
 			matches = content.match(reg);
 			cryptKey = matches[1];
 		}
+
 		//alert(content);
 		/*url = content.split(";")[0];
 		key = content.split(";")[1];*/
@@ -702,7 +702,7 @@ function qrSignature(){
 		appendMd5ToBase64 = str+md5OfBase64;
 		encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
 		enc_str = btoa(encryptAppendedMd5ToBase64);
-		console.log(enc_str);
+		
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', signatureUrl, true);
 		xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
@@ -894,6 +894,8 @@ function qrSignature(){
 					document.getElementById('status').style.color = '#5cb85c';
 					document.getElementById('status').innerHTML = 'Signature has been sent!';
 					document.getElementById("rectangle").style.display = 'none';
+					document.getElementById("browser_mode").style.display = 'none';
+					document.getElementById("findQRButton").style.display = 'none';
 					imageColorCorrection(context); //Test
 					rotateToHorizontal();
 				} else {
@@ -910,8 +912,8 @@ function qrSignature(){
 			}			
 		}
 		try{
-			imageColorCorrection(context);
-			contrastImage(context,100);
+			//imageColorCorrection(context);
+			//contrastImage(context,100);
 			var start = new Date().getTime();
 			qrcode.decode();
 			var end = new Date().getTime();
@@ -948,13 +950,18 @@ function qrSignature(){
 			setTimeout(function(){ drawVideo(); }, 1000/25); //25 fps
 		}
 	}
-	function checkUserMedia() {
+	this.checkUserMedia = function(webcam) {
 		document.getElementById('take_picture_container').style.display = 'none';
 		document.getElementById('turn_phone').style.display = 'none';
 		//Browser detection
 		//if(isMobileBrowser()) {
-			noUserMedia();
-			return false;
+			if(!webcam) {
+				noUserMedia();
+				return false;
+			} else {
+				$("#browser_mode").css("display","none");
+				$("#webcam_mode").css("display","block");
+			}
 		//}
 		cameraMode = true;
 		navigator.getUserMedia = (navigator.getUserMedia || 
@@ -1008,7 +1015,6 @@ function qrSignature(){
 			$("#rectangle").css({
 				'width':(video.videoWidth-50)+"px",
 				'height':(video.videoWidth-50)/1.7+"px",
-				'margin-left':'25px',
 				'margin-top':(video.videoHeight-(video.videoWidth-50)/1.7)/2+'px',
 				'display':'block'
 			});
