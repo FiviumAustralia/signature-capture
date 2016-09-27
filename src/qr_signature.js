@@ -67,7 +67,8 @@ function qrSignature(){
 	var imgIsReady = false;
 	var qrCodeIsReady = false;
 	var canvasRatio;
-
+	
+	var webcamMode = false;
 	var QRRatio;
 	cryptKey = '';
 	
@@ -935,7 +936,9 @@ function qrSignature(){
 				document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
 				photoTaked = false;
 				document.getElementById("sk-folding-cube-container").style.display = 'none';
-				document.getElementById("browser_mode").style.display = 'block';
+				if(!webcamMode) {
+					document.getElementById("browser_mode").style.display = 'block';
+				}
 			}
 		}
 	}
@@ -959,6 +962,7 @@ function qrSignature(){
 				noUserMedia();
 				return false;
 			} else {
+				webcamMode = true;
 				$("#browser_mode").css("display","none");
 				$("#webcam_mode").css("display","block");
 			}
