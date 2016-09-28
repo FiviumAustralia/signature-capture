@@ -2,13 +2,14 @@ body {
 	font-family: 'Roboto', sans-serif;
 }
 canvas {
-	float:left;
+	/*float:left;*/
 }
 #rectangle {
 	position:absolute;
 	display:none;
-	left:0;
+	left:50%;
 	top:0;
+	transform:translate(-50%, 0);
 	border:5px solid rgba(112, 202, 15, 0.5);
 }
 .round-button {

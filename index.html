@@ -43,13 +43,18 @@
 	<video style="display:none;" id='video'></video>
 	<img src="images/loader.gif" class="ri img-responsive center-block" id="sk-folding-cube-container" style="display:none" />
 	<canvas id='original-canvas' style="display:none;"></canvas>
-	<canvas id='qr-canvas' style="display:none;"></canvas>
-	<div id='rectangle'></div>
+	<div id="webcam_mode" class="text-center" style="display:none;">
+		<canvas id='qr-canvas' style="display:none;" class="center-block"></canvas>
+		<div id='rectangle'></div>
+		<br />
+		<img class="center-block" id="findQRButton" src="images/scan_qr_code.png" onclick="findQr(true);" style="cursor:pointer;width:250px;"/>
+	</div>
 	<canvas id='operation-canvas' style="display:none;"></canvas>
+
 	<div id='pin_container' style="display:none;">
 		<p class="text-center" style="font-size:3em;color:#5c87b8;">Please enter your pin</p>
-		<input type="password" maxlength="4" id="pin" onkeyup="checkPinPass();" /><br />
-		<button id="send_pin_btn" onclick="sendDocSignature()" disabled="true">SEND</button>
+		<input type="password" maxlength="4" id="pin" onkeyup="checkPinPass();" class="center-block"/><br />
+		<button id="send_pin_btn" onclick="sendDocSignature()" disabled="true" class="center-block">SEND</button>
 	</div>
 	<div id="doc_take_picture_container" style="height:100%;position:fixed;top:0;left:0;display:none;">
 		<img id="take_doc_picture" src="images/doc_take_picture.png" class="img-responsive center-block">
@@ -64,9 +69,12 @@
 		</div>
 	</div>
 	
-	<div id="browser_mode" style="display:none;margin-top:100px;">
+	<div id="browser_mode" style="display:none;margin-top:10px;">
 		<p class="text-center" style="font-size:3em;color:#5cb85c;">Please upload the first, signed page of the certificate.</p>
 		<div id="file_button_browser" class="file_button_browser_container center-block" ><input type="file" id="input_browser" name="input_browser" accept="image/*" ></input></div>
+		<br />
+		<p class="text-center" style="font-size:2em;color:#5cb85c;">Or try to use your webcam.</p>
+		<img class="center-block" src="images/take_photo_icon.png" onclick="test.checkUserMedia(true);" style="width:10%;cursor:pointer;"/>
 	</div>
 	<div id="take_pic_of_qr" style="position:fixed;top:0px;left:1px;display:none;background-color:#FFF;text-align:center;width:100%;margin-top:30px;">
 		<p class="text-center" style="font-size:3em;color:#5c87b8;">Please take a picture of your personal QR code.</p>
@@ -82,7 +90,8 @@
 	<div id='status' style='position:fixed;top:0;left:0;font-family:Verdana;text-align:center;'></div>
 	<script>
 		test = new qrSignature();
+		test.checkUserMedia(false);
 	</script>
-	<a href="javascript:void(0);" onclick='findQr();' id="find_qr_btn" class="round-button" style="display:none;">Scan</a>
+	
 	</body>
 </html> 

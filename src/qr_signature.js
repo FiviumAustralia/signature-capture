@@ -50,7 +50,6 @@ function sendDocSignature() {
 	document.getElementById('pin_container').style.display = 'none';
 }
 function qrSignature(){
-	checkUserMedia();
 	/*Global variables*/
 	var canvas = document.getElementById('qr-canvas');
 	/*var canvWidth = width;
@@ -68,7 +67,8 @@ function qrSignature(){
 	var imgIsReady = false;
 	var qrCodeIsReady = false;
 	var canvasRatio;
-
+	
+	var webcamMode = false;
 	var QRRatio;
 	cryptKey = '';
 	
@@ -360,13 +360,15 @@ function qrSignature(){
         finalCanvas.id = "final-canvas";
         finalCanvas.width = sourceWidth*finalRatio;
         finalCanvas.height = sourceHeight*finalRatio;
-        finalCanvas.style.position = "absolute";
+		finalCanvas.setAttribute("class","center-block");
+        /*finalCanvas.style.position = "absolute";*/
         finalCanvas.style.border = "4px solid #5c87b8";
         finalContext = finalCanvas.getContext('2d');
         var body = document.getElementsByTagName("body")[0];
         body.appendChild(finalCanvas);
 		//alert(finalCanvas.width+', '+finalCanvas.height);
         finalContext.drawImage(originalCanvas, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, sourceWidth*finalRatio, sourceHeight*finalRatio);
+
        // contrastImage(finalContext,20);
 		//imageColorCorrection(finalContext);
 		finalDocImageBase64 = finalCanvas.toDataURL("image/png");
@@ -380,6 +382,7 @@ function qrSignature(){
 		document.getElementById("original-canvas").style.display = 'none';
 	}
 	function readDocSignature(){
+		
 		document.getElementById("sk-folding-cube-container").style.display = 'none';
 		imageColorCorrection(originalContext);
 		contrastImage(originalContext,100);
@@ -390,7 +393,7 @@ function qrSignature(){
 		var maxX = 0;
 		var maxY = 0;
 		for (var i = 0; i<pix.length; i+=4) {
-			if(pix[i] < 10){
+			if(pix[i] < 5){
 				pointX = (i / 4)%canvWidth;
 				pointY = Math.floor((i / 4)/canvWidth);
 				if(pointX<minX) {
@@ -412,6 +415,7 @@ function qrSignature(){
 		maxX = maxX+5;
 		maxY = maxY+5;
 		createDocFinalImage(minX,minY,maxX,maxY);
+
 		document.getElementById('pin_container').style.display = 'block';
 		if(window.innerWidth < window.innerHeight) {
 		document.getElementById('pin').style.width=(window.innerWidth-50)+'px';
@@ -460,6 +464,7 @@ function qrSignature(){
 			matches = content.match(reg);
 			cryptKey = matches[1];
 		}
+
 		//alert(content);
 		/*url = content.split(";")[0];
 		key = content.split(";")[1];*/
@@ -567,6 +572,10 @@ function qrSignature(){
 	}
 	function getTheTopBorder(leftTopX,leftTopY,maxDifference){
 		//alert('top');
+		returnObj = {};
+		returnObj.x = leftTopX;
+		returnObj.y = leftTopY-(QRRatio*0.1);
+		return returnObj;
 		var start = new Date().getTime();
 		for(var k=0;k<4;k++){
 			pixColor = operationContext.getImageData(leftTopX, leftTopY, 1, 1).data[0];
@@ -608,7 +617,7 @@ function qrSignature(){
 				}
 			}
 		}
-		operationContext.fillStyle = 'yellow';
+		operationContext.fillStyle = 'red';
 		operationContext.fillRect(leftTopX,leftTopY,10,10);
 		returnObj = {}
 		returnObj.x = leftTopX;
@@ -694,7 +703,7 @@ function qrSignature(){
 		appendMd5ToBase64 = str+md5OfBase64;
 		encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
 		enc_str = btoa(encryptAppendedMd5ToBase64);
-		console.log(enc_str);
+		
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', signatureUrl, true);
 		xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
@@ -862,7 +871,7 @@ function qrSignature(){
 			newY = canvHeight/2 + Math.round(Math.sin(rotationDegree*Math.PI/180)) * sideC;
 		}
 		/*Get the new position of the "blue"*/
-		canvasData = context.getImageData(0, 0, canvWidth, canvHeight),
+		canvasData = context.getImageData(0, 0, canvWidth, canvHeight);
         pix = canvasData.data;
 		for (var i = 0, n = pix.length; i <n; i += 4) {
 			if(pix[i] < 20 && pix[i+1] < 20 && pix[i+2] > 150){
@@ -886,6 +895,8 @@ function qrSignature(){
 					document.getElementById('status').style.color = '#5cb85c';
 					document.getElementById('status').innerHTML = 'Signature has been sent!';
 					document.getElementById("rectangle").style.display = 'none';
+					document.getElementById("browser_mode").style.display = 'none';
+					document.getElementById("findQRButton").style.display = 'none';
 					imageColorCorrection(context); //Test
 					rotateToHorizontal();
 				} else {
@@ -902,8 +913,8 @@ function qrSignature(){
 			}			
 		}
 		try{
-			imageColorCorrection(context);
-			contrastImage(context,100);
+			//imageColorCorrection(context);
+			//contrastImage(context,100);
 			var start = new Date().getTime();
 			qrcode.decode();
 			var end = new Date().getTime();
@@ -914,9 +925,9 @@ function qrSignature(){
 				document.getElementById('status').style.color = 'red';
 				document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
 				photoTaked = false;
-				document.getElementById("file_button").style.display = 'block';
-				document.getElementById("input").style.display = 'block';
-				document.getElementById("take_picture_container").style.display = 'block';
+				/*document.getElementById("file_button").style.display = 'block';
+				document.getElementById("input").style.display = 'block';*/
+				document.getElementById("take_pic_of_qr").style.display = 'block';
 				document.getElementById("sk-folding-cube-container").style.display = 'none';
 				document.getElementById("browser_mode").style.display = 'none';
 			} else {
@@ -925,7 +936,9 @@ function qrSignature(){
 				document.getElementById('status').innerHTML = 'QR code recognize failed, please try again. Error message:'+e;
 				photoTaked = false;
 				document.getElementById("sk-folding-cube-container").style.display = 'none';
-				document.getElementById("browser_mode").style.display = 'block';
+				if(!webcamMode) {
+					document.getElementById("browser_mode").style.display = 'block';
+				}
 			}
 		}
 	}
@@ -940,13 +953,19 @@ function qrSignature(){
 			setTimeout(function(){ drawVideo(); }, 1000/25); //25 fps
 		}
 	}
-	function checkUserMedia() {
+	this.checkUserMedia = function(webcam) {
 		document.getElementById('take_picture_container').style.display = 'none';
 		document.getElementById('turn_phone').style.display = 'none';
 		//Browser detection
 		//if(isMobileBrowser()) {
-			noUserMedia();
-			return false;
+			if(!webcam) {
+				noUserMedia();
+				return false;
+			} else {
+				webcamMode = true;
+				$("#browser_mode").css("display","none");
+				$("#webcam_mode").css("display","block");
+			}
 		//}
 		cameraMode = true;
 		navigator.getUserMedia = (navigator.getUserMedia || 
@@ -1000,7 +1019,6 @@ function qrSignature(){
 			$("#rectangle").css({
 				'width':(video.videoWidth-50)+"px",
 				'height':(video.videoWidth-50)/1.7+"px",
-				'margin-left':'25px',
 				'margin-top':(video.videoHeight-(video.videoWidth-50)/1.7)/2+'px',
 				'display':'block'
 			});
@@ -1127,8 +1145,7 @@ function qrSignature(){
 			img.src = reader.result;
 			img.onload = function () {
 				/*When the image is rotated*/
-				drawImageToFile(img);
-				/*if(img.width < img.height) {
+				if(img.width < img.height && docQrReaded) {
 					var rotateCanvas = document.createElement('canvas');
 					rotateCanvas.id = "rotateCanvas";
 					rotateCanvas.width = img.height;
@@ -1154,7 +1171,7 @@ function qrSignature(){
 					}
 				} else {
 					drawImageToFile(img);
-				}*/
+				}
 			}
 		}
 		reader.readAsDataURL(e.target.files[0]);}, 500);
