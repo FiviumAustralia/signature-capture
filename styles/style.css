@@ -2,13 +2,14 @@ body {
 	font-family: 'Roboto', sans-serif;
 }
 canvas {
-	float:left;
+	/*float:left;*/
 }
 #rectangle {
 	position:absolute;
 	display:none;
-	left:0;
+	left:50%;
 	top:0;
+	transform:translate(-50%, 0);
 	border:5px solid rgba(112, 202, 15, 0.5);
 }
 .round-button {
@@ -33,18 +34,20 @@ canvas {
 
 
 .file_button_container input {
-   background: transparent url("../images/take_photo_icon_doc.png") left top no-repeat;
+   /*background: transparent url("../images/take_photo_icon_doc.png") left top no-repeat;
    background-size: 20%;
    width:20%;
-   height:20%;
+   height:20%;*/
    opacity:0;
 }
 
 .file_button_container {
-	width:20%;
-	height:20%;
+	width:15%;
+	height:100%;
 	background: transparent url("../images/take_photo_icon_doc.png") left top no-repeat;
-	background-size: 20%;
+	background-size: 100%;
+	left:0;
+	right:0;
 	position:absolute;
 }
 #file_button_browser{
