@@ -470,7 +470,7 @@ function qrSignature(){
 		key = content.split(";")[1];*/
 		//document.getElementById('qr-content').innerHTML = '<b>URL:</b>'+url+'<br /><b>Key:</b>'+key;
 	}
-	function createFinalImage(leftSide){
+	function createFinalImage(leftSide,rightBorder){
 		var start = new Date().getTime();
 		//alert('final');
 		/*var sourceX = leftSide.x*5;
@@ -516,8 +516,11 @@ function qrSignature(){
         body.appendChild(finalCanvas);
 		
        // finalContext.drawImage(originalCanvas, sourceX/canvasRatio, sourceY/canvasRatio, (sourceWidth)/canvasRatio, (sourceHeight)/canvasRatio, 0, 0, (sourceWidth)/saveRatio, (sourceHeight)/saveRatio);
-	   
         finalContext.drawImage(originalCanvas, sourceX*canvasRatio, sourceY*canvasRatio, (sourceWidth)*canvasRatio, (sourceHeight)*canvasRatio, 0, 0, (sourceWidth)*finalRatio, (sourceHeight)*finalRatio);
+		finalContext.fillStyle = "white";
+		//alert(finalRatio*rightBorder.x-(finalRatio*QRRatio*1.2)+","+finalRatio*leftSide.y+","+(finalRatio*QRRatio*1.2)+","+(finalRatio*QRRatio*1.2));
+		//finalContext.fillRect(finalRatio*rightBorder.x-(finalRatio*QRRatio*1.2),finalRatio*leftSide.y,(finalRatio*QRRatio*1.2),(finalRatio*QRRatio*1.2));
+		finalContext.fillRect(235,0,65,65);
         //contrastImage(finalContext,80);
 		//imageColorCorrection(finalContext);
 		finalCanvas.style.display = 'block';
@@ -533,7 +536,7 @@ function qrSignature(){
 		var start = new Date().getTime();
 
 		returnObj = {};
-		returnObj.x = leftX-(QRRatio*4.7);
+		returnObj.x = leftX-((QRRatio*4.7)+QRRatio*1.2);
 		returnObj.y = leftY;
 		
 		return returnObj;
@@ -646,7 +649,7 @@ function qrSignature(){
 			}
 		}
 		returnObj = {};
-		returnObj.x = leftTopX;
+		returnObj.x = leftTopX+QRRatio*1.2;
 		returnObj.y = leftTopY;
 		returnObj.newColor = newColor;
 
@@ -776,7 +779,7 @@ function qrSignature(){
 		var time = end - start;
 		console.log('Full cut time: '+time);
 		document.getElementById("sk-folding-cube-container").style.display = 'none';
-		imageData = createFinalImage(leftSide);
+		imageData = createFinalImage(leftSide,rightBorder);
 		document.getElementById("qr-canvas").style.display = "none";
 		//document.getElementById("rectangle").style.display = "none";
 		document.getElementById("original-canvas").style.display = "none";
