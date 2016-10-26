@@ -512,6 +512,7 @@ function qrSignature(){
         finalTestCanvas.height = (sourceHeight);
 
         finalTestCanvas.style.position = "absolute";
+		finalTestCanvas.style.display = "none";
         finalTestContext = finalTestCanvas.getContext('2d');
         var body = document.getElementsByTagName("body")[0];
         body.appendChild(finalTestCanvas);
