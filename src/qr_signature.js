@@ -500,13 +500,73 @@ function qrSignature(){
         var destX = leftSide.x;
         var destY = leftSide.y;
 
+		//Get the accurate signature
+		
+		canvasData = originalContext.getImageData(sourceX, sourceY+10, sourceX+sourceWidth, sourceY+sourceHeight);
+        pix = canvasData.data;
+		//test canvas
+		var finalTestCanvas = document.createElement('canvas');
+		//var finalRatio = 300/(sourceWidth);
+        finalTestCanvas.id = "final-test-canvas";
+        finalTestCanvas.width = (sourceWidth);
+        finalTestCanvas.height = (sourceHeight);
+
+        finalTestCanvas.style.position = "absolute";
+        finalTestContext = finalTestCanvas.getContext('2d');
+        var body = document.getElementsByTagName("body")[0];
+        body.appendChild(finalTestCanvas);
+		
+       // finalContext.drawImage(originalCanvas, sourceX/canvasRatio, sourceY/canvasRatio, (sourceWidth)/canvasRatio, (sourceHeight)/canvasRatio, 0, 0, (sourceWidth)/saveRatio, (sourceHeight)/saveRatio);
+        //finalTestContext.drawImage(canvasData, sourceX*canvasRatio, sourceY*canvasRatio, (sourceWidth)*canvasRatio, (sourceHeight)*canvasRatio, 0, 0, (sourceWidth)*finalRatio, (sourceHeight)*finalRatio);
+		finalTestContext.putImageData(canvasData,0,0);
+		finalTestContext.fillStyle = "white";
+		finalTestContext.fillRect((sourceWidth/5)*3.8,0,(sourceWidth/4),(sourceWidth/4));
+		imageColorCorrection(finalTestContext);
+		contrastImage(finalTestContext,100);
+		canvasData = finalTestContext.getImageData(0, 0, sourceWidth, sourceHeight);
+        pix = canvasData.data;
+		var minX = 3000;
+		var minY = 3000;
+		var maxX = 0;
+		var maxY = 0;
+		for (var i = 0; i<pix.length; i+=4) {
+			if(pix[i] < 10){
+				pointX = (i / 4)%finalTestCanvas.width;
+				pointY = Math.floor((i / 4)/finalTestCanvas.width);
+				if(pointX<minX) {
+					minX = pointX;
+				}
+				if(pointY<minY) {
+					minY = pointY;
+				}
+				if(pointX>maxX) {
+					maxX = pointX;
+				}
+				if(pointY>maxY) {
+					maxY = pointY;
+				}
+			}
+		}
+		
+		minX = minX-5;
+		minY = minY-5;
+		maxX = maxX+5;
+		maxY = maxY+5;
+		console.log(minX+', '+minY+', '+maxX+', '+maxY+' sas: '+sourceX+','+sourceY);
+
+		/*finalTestContext.fillStyle = 'red';
+		finalTestContext.fillRect(minX,minY,10,10);
+		finalTestContext.fillStyle = 'yellow';
+		finalTestContext.fillRect(maxX,maxY,10,10);*/
+		console.log((maxX+sourceX)+','+(maxY+sourceY));
+		
         var finalCanvas = document.createElement('canvas');
 		//var finalRatio = 300/(sourceWidth);
-		var finalRatio = 300/(sourceWidth);
-		var saveRatio = ((sourceWidth)*canvasRatio)/1280;
+		var finalRatio = 300/(maxX-minX);
+		var saveRatio = ((maxX-minX)*canvasRatio)/1280;
         finalCanvas.id = "final-canvas";
-        finalCanvas.width = (sourceWidth)*finalRatio;
-        finalCanvas.height = (sourceHeight)*finalRatio;
+        finalCanvas.width = (maxX-minX)*finalRatio;
+        finalCanvas.height = (maxY-minY)*finalRatio;
 
         finalCanvas.style.position = "absolute";
 		finalCanvas.style.top = ((window.innerHeight-finalCanvas.height)/2)+"px";
@@ -515,12 +575,14 @@ function qrSignature(){
         var body = document.getElementsByTagName("body")[0];
         body.appendChild(finalCanvas);
 		
-       // finalContext.drawImage(originalCanvas, sourceX/canvasRatio, sourceY/canvasRatio, (sourceWidth)/canvasRatio, (sourceHeight)/canvasRatio, 0, 0, (sourceWidth)/saveRatio, (sourceHeight)/saveRatio);
-        finalContext.drawImage(originalCanvas, sourceX*canvasRatio, sourceY*canvasRatio, (sourceWidth)*canvasRatio, (sourceHeight)*canvasRatio, 0, 0, (sourceWidth)*finalRatio, (sourceHeight)*finalRatio);
+        //finalContext.drawImage(originalCanvas, sourceX/canvasRatio, sourceY/canvasRatio, (sourceWidth)/canvasRatio, (sourceHeight)/canvasRatio, 0, 0, (sourceWidth)/saveRatio, (sourceHeight)/saveRatio);
+        //finalContext.drawImage(originalCanvas, sourceX*canvasRatio, sourceY*canvasRatio, (sourceWidth)*canvasRatio, (sourceHeight)*canvasRatio, 0, 0, (sourceWidth)*finalRatio, (sourceHeight)*finalRatio);
+        finalContext.drawImage(finalTestCanvas, minX, minY, maxX-minX, maxY-minY, 0, 0, (maxX-minX)*finalRatio, (maxY-minY)*finalRatio);
+		//finalContext.putImageData(finalTestContext, 0, 0, 0, 0, (maxX-minX)*finalRatio, (maxY-minY)*finalRatio);
 		finalContext.fillStyle = "white";
 		//alert(finalRatio*rightBorder.x-(finalRatio*QRRatio*1.2)+","+finalRatio*leftSide.y+","+(finalRatio*QRRatio*1.2)+","+(finalRatio*QRRatio*1.2));
 		//finalContext.fillRect(finalRatio*rightBorder.x-(finalRatio*QRRatio*1.2),finalRatio*leftSide.y,(finalRatio*QRRatio*1.2),(finalRatio*QRRatio*1.2));
-		finalContext.fillRect(235,0,65,65);
+		//finalContext.fillRect(235,0,65,65);
         //contrastImage(finalContext,80);
 		//imageColorCorrection(finalContext);
 		finalCanvas.style.display = 'block';
