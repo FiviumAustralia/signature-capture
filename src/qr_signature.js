@@ -19,6 +19,8 @@ function createModal(placementId, heading, formContent){
 	$("#"+placementId).html(html);
 	$("#modalWindow").modal();
 	$("#dynamicModal").modal('show');
+	setTimeout(function(){initEditor();},100)
+	
 }
 function hideModal(){
 	$('.modal.in').modal('hide');
@@ -27,7 +29,6 @@ function showEditor() {
 	instructions = 'Instructions:<br />1. Check Original Image Quality if poor then click <b>"Cancel/Retake"</b><br />2. Rotate Original if required<br />3. Adjust Crop box on Original Image if required (Use the scroll to zoom)<br />4. Change <b>"Black & White tool"</b> if required<br />5. <b>"Save Processed Signature"</b><br /><br />Original Image:';
 	editorData = '<div style="height:400px;"><img id="editorImage" height="400" src="test_image/small_sign.jpg"></div><img id="imgToCanvas" style="display:none;" >Processed Signature:<br /><canvas style="width:300px;max-height:300px;margin-left:434px;border:2px solid #5cb862;" id="result"></canvas><div id="controls" class="row" style="text-align:center;padding-left:383px"><button onclick="sendProcessedSignature();" style="float:left;margin-right:15px;background-color:#5cb862;color:#FFF;border:none;">Save<br />Processed<br />Signature</button><button onclick="location.reload();" style="float:left;margin-right:15px;background-color:#5cb862;color:#FFF;border:none;">Cancel<br /><br />Retake</button><div style="float:left;text-align:center;margin-right:15px;">Rotate Original<br /><a style="cursor:pointer;" onclick="rotateLeft();"><img src="images/rotate_left.png" width="25" /></a><a style="cursor:pointer;margin-left:15px;" onclick="rotateRight();"><img src="images/rotate_right.png" width="25" /></a></div><div style="float:left;text-align:center;">Black & White tool<br /><input id="contrast" style="float:left;" type="range" min="0" max="518" step="1" value="0" onchange="setContrast(this);" oninput="setContrast(this);" /></div></div>';
 	createModal('editorModal','Crop signature',instructions+editorData);
-	initEditor();
 }
 
 var findQrBool = false;
@@ -67,6 +68,8 @@ function sendProcessedSignature() {
 	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
 	var sendObj = JSON.stringify({"unique_identifier":unique_identifier,"image":enc_str});
 	xhr.send(sendObj);
+	//Signature has been sent!
+	$(".modal-body").html('<center><H2>Signature has been sent!</H2><br /><button onclick="location.reload();" style="background-color:#5cb862;color:#FFF;border:none;font-size:23px;">Capture another image</button></center>');
 }
 /*EDITOR*/
 var cropper;
@@ -81,6 +84,19 @@ function initEditor() {
 	var resultWidth = 300;
 	image.onload = function(){
 		cropper = new Cropper(image, {
+			ready: function(e) {
+				cropper.getCroppedCanvas().toBlob(function (blob) {
+					croppedSizeObj = cropper.getData();
+					ratio = resultWidth/croppedSizeObj.width;
+					drawCanvas.style.height=(croppedSizeObj.height*ratio)+'px';
+					ctx.clearRect(0, 0,300,1000);
+					img.onload = function() {
+						ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+						contrastImage(ctx,contrastSize);
+					}
+					img.src = URL.createObjectURL(blob);
+				});
+			},
 			cropend: function(e) {
 				cropper.getCroppedCanvas().toBlob(function (blob) {
 					croppedSizeObj = cropper.getData();
@@ -110,12 +126,30 @@ function initEditor() {
 		});
 	}
 }
-
+function refreshCropper(){
+	var img = document.getElementById('imgToCanvas');
+	var drawCanvas = document.getElementById('result');
+	var ctx = drawCanvas.getContext('2d');
+	var resultWidth = 300;
+	cropper.getCroppedCanvas().toBlob(function (blob) {
+		croppedSizeObj = cropper.getData();
+		ratio = resultWidth/croppedSizeObj.width;
+		drawCanvas.style.height=(croppedSizeObj.height*ratio)+'px';
+		ctx.clearRect(0, 0,300,1000);
+		img.onload = function() {
+			ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+			contrastImage(ctx,contrastSize);
+		}
+		img.src = URL.createObjectURL(blob);
+	});
+}
 function rotateLeft(){
 	cropper.rotate(-1);
+	refreshCropper();
 }
 function rotateRight(){
 	cropper.rotate(1);
+	refreshCropper();
 }
 function contrastImage(contextData, contrast) {
 	croppedSizeObj = cropper.getData();
