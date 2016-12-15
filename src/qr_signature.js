@@ -1,3 +1,36 @@
+function createModal(placementId, heading, formContent){
+	html =  '<div id="modalWindow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirm-modal" aria-hidden="true">';
+	html += '<div class="modal-dialog modal-xl">';
+	html += '<div class="modal-content">';
+	html += '<div class="modal-header">';
+	html += '<a class="close" data-dismiss="modal">x</a>';
+	html += '<h4>'+heading+'</h4>'
+	html += '</div>';
+	html += '<div class="modal-body">';
+	html += formContent;
+	html += '</div>';
+	html += '<div class="modal-footer">';
+	html += '<span class="btn" data-dismiss="modal">';
+	html += '</span>'; // close button
+	html += '</div>';  // footer
+	html += '</div>';  // content
+	html += '</div>';  // dialog
+	html += '</div>';  // modalWindow
+	$("#"+placementId).html(html);
+	$("#modalWindow").modal();
+	$("#dynamicModal").modal('show');
+	setTimeout(function(){initEditor();},100)
+	
+}
+function hideModal(){
+	$('.modal.in').modal('hide');
+}
+function showEditor() {
+	instructions = 'Instructions:<br />1. Check Original Image Quality if poor then click <b>"Cancel/Retake"</b><br />2. Rotate Original if required<br />3. Adjust Crop box on Original Image if required (Use the scroll to zoom)<br />4. Change <b>"Black & White tool"</b> if required<br />5. <b>"Save Processed Signature"</b><br /><br />Original Image:';
+	editorData = '<div style="height:400px;"><img id="editorImage" height="400" src="test_image/small_sign.jpg"></div><img id="imgToCanvas" style="display:none;" >Processed Signature:<br /><canvas style="width:300px;max-height:300px;margin-left:434px;border:2px solid #5cb862;" id="result"></canvas><div id="controls" class="row" style="text-align:center;padding-left:383px"><button onclick="sendProcessedSignature();" style="float:left;margin-right:15px;background-color:#5cb862;color:#FFF;border:none;">Save<br />Processed<br />Signature</button><button onclick="location.reload();" style="float:left;margin-right:15px;background-color:#5cb862;color:#FFF;border:none;">Cancel<br /><br />Retake</button><div style="float:left;text-align:center;margin-right:15px;">Rotate Original<br /><a style="cursor:pointer;" onclick="rotateLeft();"><img src="images/rotate_left.png" width="25" /></a><a style="cursor:pointer;margin-left:15px;" onclick="rotateRight();"><img src="images/rotate_right.png" width="25" /></a></div><div style="float:left;text-align:center;">Black & White tool<br /><input id="contrast" style="float:left;" type="range" min="0" max="518" step="1" value="0" onchange="setContrast(this);" oninput="setContrast(this);" /></div></div>';
+	createModal('editorModal','Crop signature',instructions+editorData);
+}
+
 var findQrBool = false;
 function findQr(){
 	findQrBool = true;
@@ -8,6 +41,148 @@ function checkPinPass(){
 	} else {
 		document.getElementById('send_pin_btn').disabled = true;
 	}
+}
+function sendProcessedSignature() {
+	processedCanvas = document.getElementById("result");
+	imgData = processedCanvas.toDataURL("image/png");
+	//Encrypt
+	imgData = imgData.replace('data:image/png;base64,','');
+	str = unescape(encodeURIComponent(imgData));
+	enc_str = mcrypt.Encrypt(str, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
+	enc_str = btoa(enc_str);
+	//Encrypt - new
+	/*
+	1. generate the base 64 of the original image
+	2. generate md5 of base 64
+	3. append  md5 to the base64
+	4. encrypt
+	5. base64 of encrypted data
+	*/
+	md5OfBase64 =  CryptoJS.MD5(str);
+	appendMd5ToBase64 = str+md5OfBase64;
+	encryptAppendedMd5ToBase64 = mcrypt.Encrypt(appendMd5ToBase64, '', CryptoJS.MD5(cryptKey+unique_identifier).toString(), 'rijndael-256', 'ecb');
+	enc_str = btoa(encryptAppendedMd5ToBase64);
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', signatureUrl, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	var sendObj = JSON.stringify({"unique_identifier":unique_identifier,"image":enc_str});
+	xhr.send(sendObj);
+	//Signature has been sent!
+	$(".modal-body").html('<center><H2>Signature has been sent!</H2><br /><button onclick="location.reload();" style="background-color:#5cb862;color:#FFF;border:none;font-size:23px;">Capture another image</button></center>');
+}
+/*EDITOR*/
+var cropper;
+function initEditor() {
+	var originalCanvas = document.getElementById("original-canvas");
+	var imgData    = originalCanvas.toDataURL("image/png");
+	var image = document.getElementById('editorImage');
+	image.src = imgData;
+	var img = document.getElementById('imgToCanvas');
+	var drawCanvas = document.getElementById('result');
+	var ctx = drawCanvas.getContext('2d');
+	var resultWidth = 300;
+	image.onload = function(){
+		cropper = new Cropper(image, {
+			ready: function(e) {
+				cropper.getCroppedCanvas().toBlob(function (blob) {
+					croppedSizeObj = cropper.getData();
+					ratio = resultWidth/croppedSizeObj.width;
+					drawCanvas.style.height=(croppedSizeObj.height*ratio)+'px';
+					ctx.clearRect(0, 0,300,1000);
+					img.onload = function() {
+						ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+						contrastImage(ctx,contrastSize);
+					}
+					img.src = URL.createObjectURL(blob);
+				});
+			},
+			cropend: function(e) {
+				cropper.getCroppedCanvas().toBlob(function (blob) {
+					croppedSizeObj = cropper.getData();
+					ratio = resultWidth/croppedSizeObj.width;
+					drawCanvas.style.height=(croppedSizeObj.height*ratio)+'px';
+					ctx.clearRect(0, 0,300,1000);
+					img.onload = function() {
+						ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+						contrastImage(ctx,contrastSize);
+					}
+					img.src = URL.createObjectURL(blob);
+				});
+			},
+			zoom: function(e) {
+				cropper.getCroppedCanvas().toBlob(function (blob) {
+					croppedSizeObj = cropper.getData();
+					ratio = resultWidth/croppedSizeObj.width;
+					drawCanvas.style.height=(croppedSizeObj.height*ratio)+'px';
+					ctx.clearRect(0, 0,300,1000);
+					img.onload = function() {
+						ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+						contrastImage(ctx,contrastSize);
+					}
+					img.src = URL.createObjectURL(blob);
+				});
+			}
+		});
+	}
+}
+function refreshCropper(){
+	var img = document.getElementById('imgToCanvas');
+	var drawCanvas = document.getElementById('result');
+	var ctx = drawCanvas.getContext('2d');
+	var resultWidth = 300;
+	cropper.getCroppedCanvas().toBlob(function (blob) {
+		croppedSizeObj = cropper.getData();
+		ratio = resultWidth/croppedSizeObj.width;
+		drawCanvas.style.height=(croppedSizeObj.height*ratio)+'px';
+		ctx.clearRect(0, 0,300,1000);
+		img.onload = function() {
+			ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+			contrastImage(ctx,contrastSize);
+		}
+		img.src = URL.createObjectURL(blob);
+	});
+}
+function rotateLeft(){
+	cropper.rotate(-1);
+	refreshCropper();
+}
+function rotateRight(){
+	cropper.rotate(1);
+	refreshCropper();
+}
+function contrastImage(contextData, contrast) {
+	croppedSizeObj = cropper.getData();
+	var resultWidth = 300;
+	ratio = resultWidth/croppedSizeObj.width;
+	var imageData = contextData.getImageData(0, 0, resultWidth,croppedSizeObj.height*ratio);
+	var data = imageData.data;
+	var factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+	for(var i=0;i<data.length;i+=4)
+	{
+		data[i] = factor * (data[i] - 128) + 128;
+		data[i+1] = factor * (data[i+1] - 128) + 128;
+		data[i+2] = factor * (data[i+2] - 128) + 128;
+	}
+	//ctx.clearRect(0, 0,1000,1000);
+	contextData.putImageData(imageData, 0, 0);
+}
+var contrastSize = 0;
+function setContrast(obj){
+	var resultWidth = 300;
+	var img = document.getElementById('imgToCanvas');
+	var drawCanvas = document.getElementById('result');
+	var ctx = drawCanvas.getContext('2d');
+	ratio = resultWidth/croppedSizeObj.width;
+	cropper.getCroppedCanvas().toBlob(function (blob) {
+			img.onload = function() {
+				ctx.drawImage(img, 0,0,resultWidth,croppedSizeObj.height*ratio);
+				contrastSize = $(obj).val()/2;
+				console.log(contrastSize);
+				contrastImage(ctx,contrastSize);
+			}
+			img.src = URL.createObjectURL(blob);
+		});
 }
 var docMode = false;
 var finalDocImageBase64;
@@ -514,7 +689,11 @@ function qrSignature(){
         finalContext = finalCanvas.getContext('2d');
         var body = document.getElementsByTagName("body")[0];
         body.appendChild(finalCanvas);
-		
+		$("#sendOrEditBtnContainer").css({
+			"position":"absolute",
+			"top":((window.innerHeight-finalCanvas.height)/2)+finalCanvas.height+10+"px",
+			"left":((window.innerWidth-finalCanvas.width)/2)+finalCanvas.width-258+"px"
+		})
        // finalContext.drawImage(originalCanvas, sourceX/canvasRatio, sourceY/canvasRatio, (sourceWidth)/canvasRatio, (sourceHeight)/canvasRatio, 0, 0, (sourceWidth)/saveRatio, (sourceHeight)/saveRatio);
 	   
         finalContext.drawImage(originalCanvas, sourceX*canvasRatio, sourceY*canvasRatio, (sourceWidth)*canvasRatio, (sourceHeight)*canvasRatio, 0, 0, (sourceWidth)*finalRatio, (sourceHeight)*finalRatio);
@@ -686,6 +865,7 @@ function qrSignature(){
 		return returnObj;
 	}
 	function sendSignature(imgData) {
+		$("#sendOrEditBtnContainer").css("display","block");
 		//Encrypt
 		imgData = imgData.replace('data:image/png;base64,','');
 		str = unescape(encodeURIComponent(imgData));
@@ -937,7 +1117,7 @@ function qrSignature(){
 				photoTaked = false;
 				document.getElementById("sk-folding-cube-container").style.display = 'none';
 				if(!webcamMode) {
-					document.getElementById("browser_mode").style.display = 'block';
+					//document.getElementById("browser_mode").style.display = 'block';
 				}
 			}
 		}
@@ -1176,6 +1356,7 @@ function qrSignature(){
 		}
 		reader.readAsDataURL(e.target.files[0]);}, 500);
 	}
+
 	/*******TEST*********/
 	  function findPos(obj) {
 	  var curleft = 0, curtop = 0;
