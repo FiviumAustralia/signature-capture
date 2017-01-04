@@ -212,7 +212,7 @@ function sendDocSignature() {
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 			document.getElementById('status').style.color = '#5cb85c';
-			document.getElementById('status').innerHTML = 'Signature sended.';
+			document.getElementById('status').innerHTML = 'Signature sent.';
 		} else {
 			document.getElementById('status').style.color = 'red';
 			document.getElementById('status').innerHTML = 'An error occurred while sending the signature.';
@@ -1083,7 +1083,7 @@ function qrSignature(){
 					//Doktor mód
 					document.getElementById("sk-folding-cube-container").style.display = 'none';
 					document.getElementById('status').style.color = '#5cb85c';
-					
+					document.getElementById('input_doc_sign').style.display = "block";
 					//document.getElementById('status').innerHTML = 'Please take a picture of your signature.';
 					document.getElementById('status').innerHTML = '';
 					docQrReaded = true;
