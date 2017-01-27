@@ -231,7 +231,8 @@ function sendDocSignature() {
 				break;
 					 
 			default: 
-				document.getElementById('status').innerHTML = '';
+				document.getElementById('status').style.color = '#5cb85c';
+				document.getElementById('status').innerHTML = 'Please wait...';
 		}
 	};
 	xhr.open('POST', signatureUrl, true);
