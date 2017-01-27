@@ -210,9 +210,23 @@ function sendDocSignature() {
 	enc_str = btoa(encryptAppendedMd5ToBase64);
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4 && xhr.status == 200) {
-			document.getElementById('status').style.color = '#5cb85c';
-			document.getElementById('status').innerHTML = 'Signature sent.';
+
+		if(xhr.status === 200){
+			switch (xhr.readyState) {
+				case 0: // UNSENT
+				case 1: // OPENED
+				case 2: // HEADERS_RECEIVED
+				case 3: // LOADING
+					document.getElementById('status').innerHTML = 'Loading...';
+					break;
+				case 4: // DONE
+					document.getElementById('status').style.color = '#5cb85c';
+					document.getElementById('status').innerHTML = 'Signature sent.';
+					break;
+					 
+				default: 
+					document.getElementById('status').innerHTML = '';
+			}
 		} else {
 			document.getElementById('status').style.color = 'red';
 			document.getElementById('status').innerHTML = 'An error occurred while sending the signature.';
