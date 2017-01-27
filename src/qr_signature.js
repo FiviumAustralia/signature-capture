@@ -226,7 +226,7 @@ function sendDocSignature() {
 					document.getElementById('status').innerHTML = 'Signature sent.';
 				} else {
 					document.getElementById('status').style.color = 'red';
-					document.getElementById('status').innerHTML = 'An error occurred while sending the signature. [' + xhr.responseText + ]';
+					document.getElementById('status').innerHTML = 'An error occurred while sending the signature. [' + xhr.responseText + ']';
 				}
 				break;
 					 
