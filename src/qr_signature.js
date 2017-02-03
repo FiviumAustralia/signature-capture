@@ -210,12 +210,29 @@ function sendDocSignature() {
 	enc_str = btoa(encryptAppendedMd5ToBase64);
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4 && xhr.status == 200) {
-			document.getElementById('status').style.color = '#5cb85c';
-			document.getElementById('status').innerHTML = 'Signature sent.';
-		} else {
-			document.getElementById('status').style.color = 'red';
-			document.getElementById('status').innerHTML = 'An error occurred while sending the signature.';
+
+		switch (xhr.readyState) {
+			case 0: // UNSENT
+			case 1: // OPENED
+			case 2: // HEADERS_RECEIVED
+			case 3: // LOADING
+				document.getElementById('status').style.color = '#5cb85c';
+				document.getElementById('status').innerHTML = 'Please wait... [' + xhr.readyState + '/4]';
+				break;
+
+			case 4: // DONE
+				if (xhr.status === 200) {
+					document.getElementById('status').style.color = '#5cb85c';
+					document.getElementById('status').innerHTML = 'Signature sent.';
+				} else {
+					document.getElementById('status').style.color = 'red';
+					document.getElementById('status').innerHTML = 'An error occurred while sending the signature. [' + xhr.responseText + ']';
+				}
+				break;
+					 
+			default: 
+				document.getElementById('status').style.color = '#5cb85c';
+				document.getElementById('status').innerHTML = 'Please wait...';
 		}
 	};
 	xhr.open('POST', signatureUrl, true);
